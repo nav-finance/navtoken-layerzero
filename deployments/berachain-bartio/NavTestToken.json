@@ -1,0 +1,17 @@
+{
+  "network": "unknown",
+  "chainId": 80069,
+  "contract": "NavTestToken",
+  "address": "0x8Ec3Cc0700aF26ed821fA452c95fa6452c7f062e",
+  "deployer": "0xD79528E481d58011a0aaeBF791fa068927beeEE2",
+  "timestamp": "2025-10-10T08:32:37.286Z",
+  "blockNumber": 10607058,
+  "transactionHash": "0x9fa8fe6fcb361e23a5afce9c14e972949bfd3b434ca4a18514454b7551e5a791",
+  "constructor": {
+    "name": "NAV Token",
+    "symbol": "NAV",
+    "decimals": 18,
+    "initialSupply": 1000000,
+    "owner": "0xD79528E481d58011a0aaeBF791fa068927beeEE2"
+  }
+}
