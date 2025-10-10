@@ -61,7 +61,7 @@ const config: HardhatUserConfig = {
             url: process.env.BERACHAIN_BEPOLIA_RPC || 'https://bepolia.rpc.berachain.com',
             accounts,
             oftAdapter: {
-                tokenAddress: '0xEA71337ACb040A1d3529c5D0C2213B27E2BB67E5', // Set the token address for the OFT adapter
+                tokenAddress: '0x8Ec3Cc0700aF26ed821fA452c95fa6452c7f062e', // NAV Token address on Bepolia
             },
         },
         'base-sepolia': {

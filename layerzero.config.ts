@@ -7,12 +7,12 @@ import type { OmniPointHardhat } from '@layerzerolabs/toolbox-hardhat'
 
 const baseContract: OmniPointHardhat = {
     eid: EndpointId.BASESEP_V2_TESTNET,
-    contractName: 'MyOFT', // Main OFT hub on Base
+    contractName: 'NavTokenHub', // Main OFT hub on Base Sepolia
 }
 
-const berachainContract: OmniPointHardhat = {
+const bepoliaContract: OmniPointHardhat = {
     eid: EndpointId.BEPOLIA_V2_TESTNET,
-    contractName: 'OFTAdapter', // Adapter wrapping your existing token on Berachain
+    contractName: 'NavTokenAdapter', // Adapter wrapping NAV token on Bepolia
 }
 
 // To connect all the above chains to each other, we need the following pathways:
@@ -35,7 +35,7 @@ const EVM_ENFORCED_OPTIONS: OAppEnforcedOption[] = [
 const pathways: TwoWayConfig[] = [
     [
         baseContract, // Chain A contract
-        berachainContract, // Chain B contract
+        bepoliaContract, // Chain B contract
         [['LayerZero Labs'], []], // [ requiredDVN[], [ optionalDVN[], threshold ] ]
         [1, 1], // [A to B confirmations, B to A confirmations]
         [EVM_ENFORCED_OPTIONS, EVM_ENFORCED_OPTIONS], // Chain B enforcedOptions, Chain A enforcedOptions
@@ -46,7 +46,7 @@ export default async function () {
     // Generate the connections config based on the pathways
     const connections = await generateConnectionsConfig(pathways)
     return {
-        contracts: [{ contract: baseContract }, { contract: berachainContract }],
+        contracts: [{ contract: baseContract }, { contract: bepoliaContract }],
         connections,
     }
 }
