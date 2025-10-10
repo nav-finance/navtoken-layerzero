@@ -7,11 +7,11 @@ import type { OmniPointHardhat } from '@layerzerolabs/toolbox-hardhat'
 
 const baseContract: OmniPointHardhat = {
     eid: EndpointId.BASESEP_V2_TESTNET,
-    contractName: 'NavTokenHub', // Main OFT hub on Base
+    contractName: 'MyOFT', // Main OFT hub on Base
 }
 
 const berachainContract: OmniPointHardhat = {
-    eid: EndpointId.BERA_V2_TESTNET,
+    eid: EndpointId.BEPOLIA_V2_TESTNET,
     contractName: 'OFTAdapter', // Adapter wrapping your existing token on Berachain
 }
 

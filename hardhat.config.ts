@@ -14,6 +14,8 @@ import { HardhatUserConfig, HttpNetworkAccountsUserConfig } from 'hardhat/types'
 import { EndpointId } from '@layerzerolabs/lz-definitions'
 
 import './tasks/index'
+import './type-extensions'
+
 
 // Set your preferred authentication method
 //
@@ -54,13 +56,18 @@ const config: HardhatUserConfig = {
         ],
     },
     networks: {
-        'base-sepolia': {
-            url: process.env.BASE_SEPOLIA_RPC || 'https://sepolia.base.org',
-            accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+        'bepolia-testnet': {
+            eid: EndpointId.BEPOLIA_V2_TESTNET,
+            url: process.env.BERACHAIN_BEPOLIA_RPC || 'https://bepolia.rpc.berachain.com',
+            accounts,
+            oftAdapter: {
+                tokenAddress: '0xEA71337ACb040A1d3529c5D0C2213B27E2BB67E5', // Set the token address for the OFT adapter
+            },
         },
-        'berachain-bartio': {
-            url: process.env.BERACHAIN_BARTIO_RPC || 'https://bartio.rpc.berachain.com',
-            accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+        'base-sepolia': {
+            eid: EndpointId.BASESEP_V2_TESTNET,
+            url: process.env.BASE_SEPOLIA_RPC || 'https://sepolia.base.org',
+            accounts,
         },
     },
     namedAccounts: {
