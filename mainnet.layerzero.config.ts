@@ -7,12 +7,12 @@ import type { OmniPointHardhat } from '@layerzerolabs/toolbox-hardhat'
 
 const baseContract: OmniPointHardhat = {
     eid: EndpointId.BASE_V2_MAINNET,
-    contractName: 'MyOFT', // Main OFT hub on Base
+    contractName: 'NavTokenHub', // Main OFT hub on Base
 }
 
 const berachainContract: OmniPointHardhat = {
     eid: EndpointId.BERA_V2_MAINNET,
-    contractName: 'OFTAdapter', // Adapter wrapping your existing token on Berachain
+    contractName: 'NavTokenAdapter', // Adapter wrapping your existing token on Berachain
 }
 
 // To connect all the above chains to each other, we need the following pathways:

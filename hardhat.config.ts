@@ -56,18 +56,33 @@ const config: HardhatUserConfig = {
         ],
     },
     networks: {
-        'bera': {
+        // MAINNET NETWORKS
+        'base-mainnet': {
+            eid: EndpointId.BASE_V2_MAINNET,
+            url: process.env.BASE_MAINNET_RPC || 'https://base-mainnet.g.alchemy.com/v2/G3faNQoBeyBRsY7-uuNw5lGKGzcV5BLs',
+            accounts,
+        },
+        'berachain-mainnet': {
             eid: EndpointId.BERA_V2_MAINNET,
-            url: process.env.BERACHAIN_BEPOLIA_RPC || 'https://bepolia.rpc.berachain.com',
+            url: process.env.BERACHAIN_MAINNET_RPC || 'https://berachain-mainnet.g.alchemy.com/v2/G3faNQoBeyBRsY7-uuNw5lGKGzcV5BLs',
             accounts,
             oftAdapter: {
-                tokenAddress: '0x8Ec3Cc0700aF26ed821fA452c95fa6452c7f062e', // NAV Token address on Bepolia
+                tokenAddress: '0x6536cEAD649249cae42FC9bfb1F999429b3ec755', // NAV Token mainnet address
             },
         },
-        'base': {
-            eid: EndpointId.BASE_V2_MAINNET,
+        // TESTNET NETWORKS
+        'base-sepolia': {
+            eid: EndpointId.BASESEP_V2_TESTNET,
             url: process.env.BASE_SEPOLIA_RPC || 'https://sepolia.base.org',
             accounts,
+        },
+        'bepolia-testnet': {
+            eid: EndpointId.BEPOLIA_V2_TESTNET,
+            url: process.env.BERACHAIN_BARTIO_RPC || 'https://berachain-bepolia.g.alchemy.com/v2/an17n8sIB8OLhKMcTuYHZlNcNbpJVRT7',
+            accounts,
+            oftAdapter: {
+                tokenAddress: '0x8Ec3Cc0700aF26ed821fA452c95fa6452c7f062e', // NAV Token testnet address
+            },
         },
     },
     namedAccounts: {
