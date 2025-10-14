@@ -16,7 +16,7 @@ This guide deploys a LayerZero OFT bridge between:
 
 **Security Configuration:**
 - 3 Required DVNs: Canary, Deutsche Telekom, Nansen
-- Confirmations: Base→Berachain (10 blocks), Berachain→Base (20 blocks)
+- Confirmations: Base→Berachain (15 blocks), Berachain→Base (20 blocks)
 - Gas limit: 80,000 (update after profiling)
 
 ---

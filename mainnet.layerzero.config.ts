@@ -37,7 +37,7 @@ const pathways: TwoWayConfig[] = [
         baseContract, // Chain A contract
         berachainContract, // Chain B contract
         [['Canary', 'Deutsche Telekom', 'Nansen'], []], // [ requiredDVN[], [ optionalDVN[], threshold ] ]
-        [10, 20], // [A to B confirmations, B to A confirmations]
+        [15, 20], // [A to B confirmations, B to A confirmations]
         [EVM_ENFORCED_OPTIONS, EVM_ENFORCED_OPTIONS], // Chain B enforcedOptions, Chain A enforcedOptions
     ],
 ]
