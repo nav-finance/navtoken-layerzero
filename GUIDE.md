@@ -1,8 +1,8 @@
 # NAV LayerZero Bridge - Mainnet Deployment Guide
 
-**Date:** _________________
-**Deployer:** _________________
-**SAFE Address:** _________________
+**Date:** 14/10/2025
+**Deployer:** @cryptobenkei
+**DEPLOYER Address:** 0x18bD8e16bc7D7324432a1bdCa3Ee535694f76E0A
 
 > **CRITICAL:** This is a one-way process. Once ownership is transferred to SAFE, the deployer wallet loses all control. Follow each step carefully and verify before proceeding.
 
@@ -24,259 +24,53 @@ This guide deploys a LayerZero OFT bridge between:
 ## PHASE 0: Pre-Deployment Verification
 
 ### 0.1 Environment Setup
-- [ ] Clean repository state: `git status` shows no uncommitted changes
-- [ ] Install dependencies: `pnpm install`
-- [ ] Clean build: `pnpm clean && pnpm compile`
-- [ ] Run tests: `pnpm test` (all tests pass)
-- [ ] Lint check: `pnpm lint` (no errors)
+- [x] Clean repository state: `git status` shows no uncommitted changes
+- [x] Install dependencies: `pnpm install`
+- [x] Clean build: `pnpm clean && pnpm compile`
 
 ### 0.2 Verify NAV Token on Berachain Mainnet
 
-**NAV Token Address (from hardhat.config.ts:70):** `0x6536cEAD649249cae42FC9bfb1F999429b3ec755`
+**NAV Token Address (from hardhat.config.ts):** `0x6536cEAD649249cae42FC9bfb1F999429b3ec755`
+Berascan : https://berascan.com/token/0x6536cead649249cae42fc9bfb1f999429b3ec755
 
 Run verification commands:
-
-```bash
-# Set RPC URL
-export BERACHAIN_MAINNET_RPC="<your-berachain-rpc>"
-
-# Check token name
-cast call 0x6536cEAD649249cae42FC9bfb1F999429b3ec755 \
-  "name()" --rpc-url $BERACHAIN_MAINNET_RPC
-
-# Check token symbol
-cast call 0x6536cEAD649249cae42FC9bfb1F999429b3ec755 \
-  "symbol()" --rpc-url $BERACHAIN_MAINNET_RPC
-
-# Check decimals
-cast call 0x6536cEAD649249cae42FC9bfb1F999429b3ec755 \
-  "decimals()" --rpc-url $BERACHAIN_MAINNET_RPC
-
-# Check total supply
-cast call 0x6536cEAD649249cae42FC9bfb1F999429b3ec755 \
-  "totalSupply()" --rpc-url $BERACHAIN_MAINNET_RPC
-
-# Check owner (if Ownable)
-cast call 0x6536cEAD649249cae42FC9bfb1F999429b3ec755 \
-  "owner()" --rpc-url $BERACHAIN_MAINNET_RPC
-```
-
-**Verification Checklist:**
-- [ ] Token name: _________________ (expected: "NAV Token" or similar)
-- [ ] Token symbol: "NAV"
-- [ ] Decimals: 18
-- [ ] Total supply: > 0
-- [ ] Owner address: _________________ (record for reference)
-- [ ] **CONFIRMED:** This is the correct NAV token to bridge ✓
-
-### 0.3 Profile Gas Usage on Testnet
-
-**Current gas setting:** 80,000 (mainnet.layerzero.config.ts:28)
-
-Test on existing testnet deployment:
-- Base Sepolia NavTokenHub: `0x329aE92D6872cB4843f2fdbA90d48c11D7DA85e9`
-- Bepolia NavTokenAdapter: `0xC07A56818FA2C5FFd7236199f20dE21Fd33b62dE`
-
-```bash
-# Get testnet endpoint addresses from LayerZero docs
-# Base Sepolia Endpoint: https://docs.layerzero.network/v2/deployments/base
-# Bepolia Endpoint: https://docs.layerzero.network/v2/deployments/berachain
-
-# Profile lzReceive gas usage (run 10 times for average)
-pnpm gas:lzReceive \
-  <bepolia-rpc> \
-  <bepolia-endpoint-address> \
-  40245 \
-  0x329aE92D6872cB4843f2fdbA90d48c11D7DA85e9 \
-  40291 \
-  0xC07A56818FA2C5FFd7236199f20dE21Fd33b62dE \
-  <encoded-message> \
-  0 \
-  10
-```
-
-- [ ] Gas profiling completed
-- [ ] Average gas usage: _________________
-- [ ] Recommended gas (avg + 20% buffer): _________________
-- [ ] **ACTION:** Update `mainnet.layerzero.config.ts` line 28 with profiled gas value
-
-### 0.4 Test Testnet Bridge End-to-End
-
-Verify testnet bridge works before mainnet deployment:
-
-```bash
-# Send 1 NAV from Base Sepolia → Bepolia
-pnpm hardhat lz:oft:send \
-  --network base-sepolia \
-  --src-eid 40245 \
-  --dst-eid 40291 \
-  --amount 1000000000000000000 \
-  --to <your-test-address>
-```
-
-- [ ] Testnet bridge transaction sent
-- [ ] Transaction hash: _________________
-- [ ] LayerZero Scan URL: _________________
-- [ ] Message verified by DVN ✓
-- [ ] Message executed on destination ✓
-- [ ] Tokens received on Bepolia ✓
-- [ ] **CONFIRMED:** Testnet bridge works perfectly
-
-### 0.5 Review Configuration Files
+ 
+### 0.3 Review Configuration Files
 
 **mainnet.layerzero.config.ts:**
-- [ ] Endpoint IDs: BASE_V2_MAINNET (30184), BERA_V2_MAINNET (30290)
-- [ ] Contract names: NavTokenHub, NavTokenAdapter
-- [ ] DVNs: Canary, Deutsche Telekom, Nansen (3 required)
-- [ ] Confirmations: 10 (Base→Bera), 20 (Bera→Base)
-- [ ] Gas limit: _________________ (updated from profiling)
+- [x] Endpoint IDs: BASE_V2_MAINNET (30184), BERA_V2_MAINNET (30290)
+- [x] Contract names: NavTokenHub, NavTokenAdapter
+- [x] DVNs: Canary, Deutsche Telekom, Nansen (3 required)
+- [x] Confirmations: 15 (Base→Bera), 20 (Bera→Base)
+- [x] Gas limit: 80000
 
 **hardhat.config.ts:**
-- [ ] Base Mainnet RPC configured
-- [ ] Berachain Mainnet RPC configured
-- [ ] NAV token address verified: `0x6536cEAD649249cae42FC9bfb1F999429b3ec755`
-
-### 0.6 Estimate Costs
-
-**3-DVN Configuration = Higher Fees**
-
-- [ ] Research DVN costs:
-  - Canary: ~$___ per message
-  - Deutsche Telekom: ~$___ per message
-  - Nansen: ~$___ per message
-  - **Total per message:** ~$___
-- [ ] Expected monthly volume: ___ messages
-- [ ] Estimated monthly cost: $___
-- [ ] **CONFIRMED:** Cost is acceptable ✓
+- [X] Base Mainnet RPC configured
+- [X] Berachain Mainnet RPC configured
+- [x] NAV token address verified: `0x6536cEAD649249cae42FC9bfb1F999429b3ec755`
 
 ---
 
-## PHASE 1: SAFE Wallet Control Verification
+## PHASE 1: Deployment Wallet Setup
 
-**CRITICAL:** Verify SAFE control BEFORE creating deployment wallet!
+### 1.1 Create Clean Deployer Wallet
 
-### 1.1 Verify SAFE on Base Mainnet
-
-**SAFE Address:** _________________
+**✅ USING ENCRYPTED KEYSTORE**
 
 ```bash
-export BASE_MAINNET_RPC="<your-base-rpc>"
+# Create encrypted keystore wallet (ALREADY DONE)
+# cast wallet new ~/.foundry/keystores/deployer
 
-# Check SAFE exists
-cast call <SAFE-address> "getOwners()" --rpc-url $BASE_MAINNET_RPC
-
-# Check threshold
-cast call <SAFE-address> "getThreshold()" --rpc-url $BASE_MAINNET_RPC
-
-# Check nonce (should be > 0 if used before)
-cast call <SAFE-address> "nonce()" --rpc-url $BASE_MAINNET_RPC
+# Get the deployer address
+cast wallet address --keystore ~/.foundry/keystores/deployer
 ```
 
-**Verification:**
-- [ ] SAFE exists on Base Mainnet
-- [ ] Number of owners: _______
-- [ ] Threshold: _______ (signatures required)
-- [ ] Current signers:
-  - [ ] Signer 1: _________________
-  - [ ] Signer 2: _________________
-  - [ ] Signer 3: _________________
-  - [ ] (add more if needed)
-- [ ] All signers have access to their keys ✓
-
-### 1.2 Test Base SAFE Transaction
-
-**Send 0.01 ETH from SAFE → Test Address**
-
-Test address: _________________
+**Keystore File:** `~/.foundry/keystores/deployer/4638f6f1-be42-4c5b-8083-31908323d94c`
+**Deployer Wallet Address:** 0x18bD8e16bc7D7324432a1bdCa3Ee535694f76E0A
 
 ```bash
-# Check SAFE balance before
-cast balance <SAFE-address> --rpc-url $BASE_MAINNET_RPC
-```
-
-Using SAFE UI (https://app.safe.global/):
-1. Connect to Base Mainnet
-2. Load SAFE: `<your-safe-address>`
-3. Create transaction: Send 0.01 ETH to test address
-4. Sign with required signers (threshold)
-5. Execute transaction
-
-- [ ] Transaction created in SAFE UI
-- [ ] All required signers signed ✓
-- [ ] Transaction executed successfully
-- [ ] Transaction hash: _________________
-- [ ] Test address received 0.01 ETH ✓
-- [ ] **CONFIRMED:** Base SAFE control verified ✓
-
-### 1.3 Verify SAFE on Berachain Mainnet
-
-**SAFE Address (should be same):** _________________
-
-```bash
-export BERACHAIN_MAINNET_RPC="<your-berachain-rpc>"
-
-# Check SAFE exists
-cast call <SAFE-address> "getOwners()" --rpc-url $BERACHAIN_MAINNET_RPC
-
-# Check threshold
-cast call <SAFE-address> "getThreshold()" --rpc-url $BERACHAIN_MAINNET_RPC
-
-# Check nonce
-cast call <SAFE-address> "nonce()" --rpc-url $BERACHAIN_MAINNET_RPC
-```
-
-**Verification:**
-- [ ] SAFE exists on Berachain Mainnet
-- [ ] Number of owners: _______ (should match Base)
-- [ ] Threshold: _______ (should match Base)
-- [ ] Signers match Base SAFE ✓
-
-### 1.4 Test Berachain SAFE Transaction
-
-**Send 1 BERA from SAFE → Test Address**
-
-Test address: _________________
-
-```bash
-# Check SAFE balance before
-cast balance <SAFE-address> --rpc-url $BERACHAIN_MAINNET_RPC
-```
-
-Using SAFE UI:
-1. Connect to Berachain Mainnet
-2. Load SAFE: `<your-safe-address>`
-3. Create transaction: Send 1 BERA to test address
-4. Sign with required signers
-5. Execute transaction
-
-- [ ] Transaction created in SAFE UI
-- [ ] All required signers signed ✓
-- [ ] Transaction executed successfully
-- [ ] Transaction hash: _________________
-- [ ] Test address received 1 BERA ✓
-- [ ] **CONFIRMED:** Berachain SAFE control verified ✓
-
----
-
-## PHASE 2: Deployment Wallet Setup
-
-### 2.1 Create Clean Deployer Wallet
-
-**⚠️ SECURITY CRITICAL:** Use hardware wallet OR secure offline keygen
-
-```bash
-# Option 1: Hardware wallet (RECOMMENDED)
-# - Use Ledger/Trezor to generate new address
-# - Export address only (keep private key on device)
-
-# Option 2: Secure keygen (if no hardware wallet)
-# - Use air-gapped machine
-# - Generate with: openssl rand -hex 32
-# - NEVER share or commit private key
-
-# Create .env.mainnet file (NEVER commit!)
+# Create .env.mainnet file (for RPC URLs only - NO PRIVATE KEY)
 cat > .env.mainnet << 'EOF'
-PRIVATE_KEY=0x___YOUR_PRIVATE_KEY_HERE___
 BASE_MAINNET_RPC=https://base-mainnet.g.alchemy.com/v2/___YOUR_KEY___
 BERACHAIN_MAINNET_RPC=https://berachain-mainnet.g.alchemy.com/v2/___YOUR_KEY___
 EOF
@@ -285,67 +79,127 @@ EOF
 echo ".env.mainnet" >> .gitignore
 ```
 
-**Deployer Wallet Address:** _________________
-
-- [ ] Deployer wallet created securely
-- [ ] Private key stored in `.env.mainnet`
+**Security Checklist:**
+- [x] Deployer wallet created with encrypted keystore ✓
+- [ ] Keystore password stored securely (NOT in files)
+- [ ] `.env.mainnet` contains ONLY RPC URLs (no private key) ✓
 - [ ] `.env.mainnet` added to `.gitignore`
 - [ ] **VERIFIED:** `.env.mainnet` NOT tracked by git
-- [ ] Deployer address recorded: _________________
+- [x] Deployer address recorded: `0x18bD8e16bc7D7324432a1bdCa3Ee535694f76E0A` ✓
 
-### 2.2 Fund Deployer from SAFE
+---
 
-**Fund with enough gas for deployment + testing + buffer**
+## PHASE 2: Verify SAFE Control & Fund Deployer
 
-#### Base Mainnet Funding
+**Goal:** Verify SAFE multisig control on both chains AND fund deployer wallet in one transaction per chain.
 
-**Required:** ~0.02 ETH
+### 2.1 Verify Base SAFE & Fund Deployer
+
+**Base SAFE Address:** `0x735698e050da63a3ce02488b6cd6714b8e459a09`
+
+```bash
+export BASE_MAINNET_RPC="https://mainnet.base.org"  # or your RPC URL
+export SAFE_ADDRESS=0x735698e050da63a3ce02488b6cd6714b8e459a09
+export DEPLOYER_ADDRESS=0x18bD8e16bc7D7324432a1bdCa3Ee535694f76E0A
+
+# 1. Verify SAFE configuration
+cast call $SAFE_ADDRESS "getOwners()" --rpc-url $BASE_MAINNET_RPC
+cast call $SAFE_ADDRESS "getThreshold()" --rpc-url $BASE_MAINNET_RPC
+cast call $SAFE_ADDRESS "nonce()" --rpc-url $BASE_MAINNET_RPC
+
+# 2. Check SAFE balance
+cast balance $SAFE_ADDRESS --rpc-url $BASE_MAINNET_RPC --ether
+```
+
+**Expected SAFE Configuration:**
+- [x] SAFE exists on Base Mainnet ✓
+- [x] Number of owners: 3
+- [x] Threshold: 2 (signatures required)
+- [x] Current signers:
+  - [x] 0xcac4617a0aa4c57245fe2fb15e78bc21c2e535c1
+  - [x] 0xf13f7bf69a5e57ea3367222c65dd3380096d3fbf
+  - [x] 0x735698e050da63a3ce02488b6cd6714b8e459a09
+- [ ] All signers have access to their keys ✓
+- [ ] SAFE has sufficient balance (≥ 0.02 ETH) ✓
+
+**Send 0.02 ETH from SAFE → Deployer** (verifies SAFE control + funds deployer):
+
+**Funding Breakdown:**
 - Deployment: ~0.005 ETH
 - Configuration: ~0.003 ETH
 - Testing: ~0.010 ETH
 - Buffer: ~0.002 ETH
+- **Total: 0.02 ETH**
 
-Using Base SAFE:
-```bash
-# Check SAFE balance
-cast balance <SAFE-address> --rpc-url $BASE_MAINNET_RPC
-```
+Using SAFE UI (https://app.safe.global/):
+1. Connect to Base Mainnet
+2. Load SAFE: `0x735698e050da63a3ce02488b6cd6714b8e459a09`
+3. Create transaction: Send **0.02 ETH** to `0x18bD8e16bc7D7324432a1bdCa3Ee535694f76E0A`
+4. Sign with required signers (threshold: 2)
+5. Execute transaction
 
-Send 0.02 ETH from SAFE → Deployer:
+**Checklist:**
 - [ ] Transaction created in SAFE UI
-- [ ] Send to: `<deployer-address>`
-- [ ] Amount: 0.02 ETH
-- [ ] All signers signed ✓
-- [ ] Transaction executed
+- [ ] All required signers signed (2/3) ✓
+- [ ] Transaction executed successfully
 - [ ] Transaction hash: _________________
+- [ ] **CONFIRMED:** Base SAFE control verified ✓
+- [ ] **CONFIRMED:** Deployer funded ✓
 
 Verify deployer received funds:
 ```bash
-cast balance <deployer-address> --rpc-url $BASE_MAINNET_RPC
+cast balance $DEPLOYER_ADDRESS --rpc-url $BASE_MAINNET_RPC --ether
 ```
 - [ ] Deployer balance: ≥ 0.02 ETH ✓
 
-#### Berachain Mainnet Funding
+---
 
-**Required:** ~10 BERA (adjust based on gas prices)
+### 2.2 Verify Berachain SAFE & Fund Deployer
 
-Using Berachain SAFE:
+**Berachain SAFE Address:** `0x8F9Ae98d1670ECb6407FE7B2EA993C0AD7ac80e1`
+
 ```bash
-# Check SAFE balance
-cast balance <SAFE-address> --rpc-url $BERACHAIN_MAINNET_RPC
+export BERACHAIN_MAINNET_RPC="<your-berachain-rpc>"
+export SAFE_ADDRESS=0x8F9Ae98d1670ECb6407FE7B2EA993C0AD7ac80e1
+export DEPLOYER_ADDRESS=0x18bD8e16bc7D7324432a1bdCa3Ee535694f76E0A
+
+# 1. Verify SAFE configuration
+cast call $SAFE_ADDRESS "getOwners()" --rpc-url $BERACHAIN_MAINNET_RPC
+cast call $SAFE_ADDRESS "getThreshold()" --rpc-url $BERACHAIN_MAINNET_RPC
+cast call $SAFE_ADDRESS "nonce()" --rpc-url $BERACHAIN_MAINNET_RPC
+
+# 2. Check SAFE balance
+cast balance $SAFE_ADDRESS --rpc-url $BERACHAIN_MAINNET_RPC --ether
 ```
 
-Send 10 BERA from SAFE → Deployer:
+**Expected SAFE Configuration:**
+- [x] SAFE exists on Berachain Mainnet ✓
+- [x] Number of owners: 3 (matches Base SAFE)
+- [x] Threshold: 2 (matches Base SAFE)
+- [x] Signers match Base SAFE ✓
+- [x] Nonce: 31 (has transaction history) ✓
+- [ ] SAFE has sufficient balance (≥ 10 BERA) ✓
+
+**Send 10 BERA from SAFE → Deployer** (verifies SAFE control + funds deployer):
+
+Using SAFE UI:
+1. Connect to Berachain Mainnet
+2. Load SAFE: `0x8F9Ae98d1670ECb6407FE7B2EA993C0AD7ac80e1`
+3. Create transaction: Send **10 BERA** to `0x18bD8e16bc7D7324432a1bdCa3Ee535694f76E0A`
+4. Sign with required signers (threshold: 2)
+5. Execute transaction
+
+**Checklist:**
 - [ ] Transaction created in SAFE UI
-- [ ] Send to: `<deployer-address>`
-- [ ] Amount: 10 BERA
-- [ ] All signers signed ✓
-- [ ] Transaction executed
+- [ ] All required signers signed (2/3) ✓
+- [ ] Transaction executed successfully
 - [ ] Transaction hash: _________________
+- [ ] **CONFIRMED:** Berachain SAFE control verified ✓
+- [ ] **CONFIRMED:** Deployer funded ✓
 
 Verify deployer received funds:
 ```bash
-cast balance <deployer-address> --rpc-url $BERACHAIN_MAINNET_RPC
+cast balance $DEPLOYER_ADDRESS --rpc-url $BERACHAIN_MAINNET_RPC --ether
 ```
 - [ ] Deployer balance: ≥ 10 BERA ✓
 
@@ -353,13 +207,32 @@ cast balance <deployer-address> --rpc-url $BERACHAIN_MAINNET_RPC
 
 ## PHASE 3: Contract Deployment
 
+**Before Starting:** Ensure you have your keystore password ready. You'll be prompted for it when exporting the private key.
+
+### Environment Setup (Run Once)
+
+```bash
+# Load RPC URLs from .env.mainnet
+export $(cat .env.mainnet | xargs)
+
+# Set keystore path
+export KEYSTORE_PATH=~/.foundry/keystores/deployer
+
+# Export private key from keystore (will prompt for password)
+export PRIVATE_KEY=$(cast wallet private-key --keystore $KEYSTORE_PATH)
+
+# Verify deployer address
+echo "Deployer address: $(cast wallet address --keystore $KEYSTORE_PATH)"
+```
+
+**Security Note:** The `PRIVATE_KEY` is now in your environment. Clear it after all deployments with `unset PRIVATE_KEY`.
+
+---
+
 ### 3.1 Deploy NavTokenHub on Base Mainnet
 
 ```bash
-# Load environment
-export $(cat .env.mainnet | xargs)
-
-# Deploy NavTokenHub
+# Deploy NavTokenHub (assumes environment is set up from section above)
 pnpm hardhat lz:deploy \
   --network base-mainnet \
   --tags NavTokenHub
@@ -411,7 +284,7 @@ cast call $NAVTOKEN_HUB "decimals()" --rpc-url $BASE_MAINNET_RPC
 ### 3.2 Deploy NavTokenAdapter on Berachain Mainnet
 
 ```bash
-# Deploy NavTokenAdapter
+# Deploy NavTokenAdapter (assumes environment is set up)
 pnpm hardhat lz:deploy \
   --network berachain-mainnet \
   --tags NavTokenAdapter
@@ -465,6 +338,20 @@ cast call $NAVTOKEN_ADAPTER "token()" --rpc-url $BERACHAIN_MAINNET_RPC
 
 - [ ] All addresses recorded ✓
 - [ ] Backup created: `cp GUIDE.md GUIDE-deployment-record.md`
+
+### 3.4 Clean Up Environment
+
+```bash
+# IMPORTANT: Clear private key from environment after all deployments
+unset PRIVATE_KEY
+unset KEYSTORE_PATH
+
+# Verify it's cleared
+echo $PRIVATE_KEY  # Should print nothing
+```
+
+- [ ] Private key cleared from environment ✓
+- [ ] Environment variables cleaned up ✓
 
 ---
 
@@ -795,7 +682,7 @@ Once ownership is transferred, the deployer wallet loses ALL control. The SAFE b
 # Transfer NavTokenHub ownership to SAFE
 cast send $NAVTOKEN_HUB \
   "transferOwnership(address)" \
-  <SAFE-address> \
+  $SAFE_ADDRESS \
   --private-key $PRIVATE_KEY \
   --rpc-url $BASE_MAINNET_RPC
 ```
@@ -809,7 +696,7 @@ Verify new owner:
 cast call $NAVTOKEN_HUB "owner()" --rpc-url $BASE_MAINNET_RPC
 ```
 
-Expected output: `<SAFE-address>`
+Expected output: `$SAFE_ADDRESS`
 
 - [ ] Owner is now SAFE ✓
 - [ ] **Deployer no longer has control over NavTokenHub** ✓
@@ -820,7 +707,7 @@ Expected output: `<SAFE-address>`
 # Transfer NavTokenAdapter ownership to SAFE
 cast send $NAVTOKEN_ADAPTER \
   "transferOwnership(address)" \
-  <SAFE-address> \
+  $SAFE_ADDRESS \
   --private-key $PRIVATE_KEY \
   --rpc-url $BERACHAIN_MAINNET_RPC
 ```
@@ -834,7 +721,7 @@ Verify new owner:
 cast call $NAVTOKEN_ADAPTER "owner()" --rpc-url $BERACHAIN_MAINNET_RPC
 ```
 
-Expected output: `<SAFE-address>`
+Expected output: `$SAFE_ADDRESS`
 
 - [ ] Owner is now SAFE ✓
 - [ ] **Deployer no longer has control over NavTokenAdapter** ✓
@@ -902,7 +789,7 @@ Return remaining gas funds to SAFE:
 cast balance <deployer-address> --rpc-url $BASE_MAINNET_RPC
 
 # Send remaining ETH to SAFE (leave some for gas)
-cast send <SAFE-address> \
+cast send $SAFE_ADDRESS \
   --value <remaining-amount-minus-gas> \
   --private-key $PRIVATE_KEY \
   --rpc-url $BASE_MAINNET_RPC
@@ -919,7 +806,7 @@ cast send <SAFE-address> \
 cast balance <deployer-address> --rpc-url $BERACHAIN_MAINNET_RPC
 
 # Send remaining BERA to SAFE (leave some for gas)
-cast send <SAFE-address> \
+cast send $SAFE_ADDRESS \
   --value <remaining-amount-minus-gas> \
   --private-key $PRIVATE_KEY \
   --rpc-url $BERACHAIN_MAINNET_RPC
@@ -987,7 +874,7 @@ Save this information permanently:
 **Deployment Date:** <date>
 **Deployed By:** <deployer-name>
 **Deployer Address:** <deployer-address>
-**SAFE Address:** <safe-address>
+**SAFE Address:** $SAFE_ADDRESS
 
 ## Contract Addresses
 
@@ -1011,7 +898,7 @@ Save this information permanently:
 - **Enforced Gas:** _________ (profiled value)
 
 ### Ownership
-- Both contracts owned by SAFE: `<safe-address>`
+- Both contracts owned by SAFE: `$SAFE_ADDRESS`
 - SAFE threshold: _______ / _______
 - SAFE signers:
   1. _________________
