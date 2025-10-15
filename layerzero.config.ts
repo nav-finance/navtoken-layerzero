@@ -1,0 +1,1 @@
+mainnet.layerzero.config.ts

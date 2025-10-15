@@ -8,6 +8,7 @@ import 'dotenv/config'
 import 'hardhat-deploy'
 import 'hardhat-contract-sizer'
 import '@nomiclabs/hardhat-ethers'
+import '@nomiclabs/hardhat-etherscan'
 import '@layerzerolabs/toolbox-hardhat'
 import { HardhatUserConfig, HttpNetworkAccountsUserConfig } from 'hardhat/types'
 
@@ -83,6 +84,30 @@ const config: HardhatUserConfig = {
         deployer: {
             default: 0, // wallet address of index[0], of the mnemonic in .env
         },
+    },
+    etherscan: {
+        apiKey: {
+            'base-mainnet': process.env.BASESCAN_API_KEY || '',
+            berachain: 'placeholder', // Berachain explorer may not require API key yet
+        },
+        customChains: [
+            {
+                network: 'base-mainnet',
+                chainId: 8453,
+                urls: {
+                    apiURL: 'https://api.basescan.org/api',
+                    browserURL: 'https://basescan.org',
+                },
+            },
+            {
+                network: 'berachain',
+                chainId: 80084,
+                urls: {
+                    apiURL: 'https://api.routescan.io/v2/network/mainnet/evm/80084/etherscan',
+                    browserURL: 'https://bartio.beratrail.io',
+                },
+            },
+        ],
     },
 }
 
